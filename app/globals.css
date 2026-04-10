@@ -108,6 +108,10 @@ body {
   background-image: url('/img/background/poolside-fm-pacific-breeze-edited.png');
 }
 
+.bg-tile-5 {
+  background-image: url('/img/background/minecraft-dirt.webp');
+}
+
 .os-window *::-webkit-scrollbar {
   width: 14px;
 

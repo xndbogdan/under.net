@@ -81,37 +81,37 @@ export const underNet: Tracklist = [
   },
   {
     title: "MUSE",
-    artist: "sixteen_veins",
+    artist: "sixteen veins",
     audio_url: "undernet-vol-4/sixteen_veins-MUSE",
     permalink_url: "https://soundcloud.com/underdotnet/sixteen-veins-muse-14"
   },
   {
     title: "FEAR",
-    artist: "Ghost_In_The_System",
+    artist: "Ghost In The System",
     audio_url: "undernet-vol-4/Ghost_In_The_System-FEAR",
     permalink_url: "https://soundcloud.com/underdotnet/ghost-in-the-system-fear-15"
   },
   {
-    title: "ANG3L_CRUSH",
+    title: "ANG3L CRUSH",
     artist: "earthangelbaby",
     audio_url: "undernet-vol-4/earthangelbaby-ANG3L_CRUSH",
     permalink_url: "https://soundcloud.com/underdotnet/earthangelbaby-ang3l-crush-16"
   },
   {
     title: "HATENA",
-    artist: "GnB_Chili",
+    artist: "GnB Chili",
     audio_url: "undernet-vol-4/GnB_Chili-HATENA",
     permalink_url: "https://soundcloud.com/underdotnet/gnb-chili-hatena-17"
   },
   {
-    title: "WAKE_ME_UP",
+    title: "WAKE ME UP",
     artist: "nabii",
     audio_url: "undernet-vol-4/nabii-WAKE_ME_UP",
     permalink_url: "https://soundcloud.com/underdotnet/nabii-wake-me-up-18"
   },
   {
-    title: "Its_Better_to_Burn_Out_Than_Fade_Away",
-    artist: "enable_secret",
+    title: "It's Better to Burn Out Than Fade Away",
+    artist: "enable secret",
     audio_url: "undernet-vol-4/enable_secret-Its_Better_to_Burn_Out_Than_Fade_Away",
     permalink_url: "https://soundcloud.com/underdotnet/enable-secret-its-better-to-burn-out-than-fade-away-19"
   },
