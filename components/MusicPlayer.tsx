@@ -234,7 +234,7 @@ export const MusicPlayer = (props: { closed: boolean }) => {
           <a
             target="_blank"
             href={selectedTrack?.permalink_url || "#"}
-            className="opacity-75 cursor-pointer truncate"
+            className="opacity-75 cursor-point truncate"
             ref={displayText}
             rel="noreferrer"
           >
@@ -289,8 +289,8 @@ export const MusicPlayer = (props: { closed: boolean }) => {
           }}
           className={
             menu
-              ? "bg-gray-400 flex items-center px-1 cursor-pointer"
-              : "hover:invert bg-gray-mac flex items-center px-1 cursor-pointer"
+              ? "bg-gray-400 flex items-center px-1 cursor-point"
+              : "hover:invert bg-gray-mac flex items-center px-1 cursor-point"
           }
         >
           <p className="text-sm">{playlist.name}</p>
@@ -312,7 +312,7 @@ export const MusicPlayer = (props: { closed: boolean }) => {
         >
           <ul className="text-xs" aria-labelledby="dropdownDefault">
             <li onMouseDown={() => changePlaylist(1)}>
-              <span className="block py-1 px-4 border-b border-black hover:text-white hover:bg-black cursor-pointer">
+              <span className="block py-1 px-4 border-b border-black hover:text-white hover:bg-black cursor-point">
                 under.net
               </span>
             </li>
@@ -341,7 +341,7 @@ export const MusicPlayer = (props: { closed: boolean }) => {
       </div>
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-row space-x-4 text-sm mt-2 pb-2">
-          <button onClick={previousTrack}>
+          <button className="cursor-point" onClick={previousTrack}>
             <svg
               className="icon h-4"
               xmlns="http://www.w3.org/2000/svg"
@@ -354,7 +354,7 @@ export const MusicPlayer = (props: { closed: boolean }) => {
               />
             </svg>
           </button>
-          <button onClick={togglePlay}>
+          <button className="cursor-point" onClick={togglePlay}>
             {!isPlaying ? (
               <svg
                 className="icon h-4"
@@ -379,7 +379,7 @@ export const MusicPlayer = (props: { closed: boolean }) => {
               </svg>
             )}
           </button>
-          <button onClick={nextTrack}>
+          <button className="cursor-point" onClick={nextTrack}>
             <svg
               className="icon h-4"
               xmlns="http://www.w3.org/2000/svg"

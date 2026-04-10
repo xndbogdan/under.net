@@ -57,6 +57,10 @@ body {
   cursor:url('/img/cursors/hand2.png'), auto !important;
 }
 
+.cursor-grab:active {
+  cursor:url('/img/cursors/hand3.cur'), auto !important;
+}
+
 .cursor-point {
   cursor:url('/img/cursors/hand.png'), auto !important;
 }

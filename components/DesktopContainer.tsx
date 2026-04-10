@@ -227,9 +227,9 @@ export const DesktopContainer = ({windowTitle}: DesktopContainerProps) => {
                               </div>
                               <div className="p-2 overflow-y-auto text-sm bg-white border border-black select-full">
                                   <p>Something something under.net.</p>
-                                  <p className='mt-2'>For business inqueries, join the <a className='text-blue-700' target='_blank' href='#' rel="noreferrer">Discord server</a>.</p>
+                                  <p className='mt-2'>For business inqueries, join the <a className='text-blue-700 cursor-point' target='_blank' href='#' rel="noreferrer">Discord server</a>.</p>
                                   <p className="mt-4">Links:</p>
-                                  <p className="mt-2"><a className='text-blue-700' target='_blank' href='#' rel="noreferrer">Grab some merch here</a></p>
+                                  <p className="mt-2"><a className='text-blue-700 cursor-point' target='_blank' href='#' rel="noreferrer">Grab some merch here</a></p>
                               </div>
                           </div>
                       </Draggable>
@@ -266,10 +266,10 @@ export const DesktopContainer = ({windowTitle}: DesktopContainerProps) => {
                               </div>
                               <div className="p-2 overflow-y-auto text-sm bg-white border border-black max-h-80 select-full">
                                   <p className="mb-2 text-lg">Credits</p>
-                                  <p><a target="_blank" href="https://remix.run" className="text-blue-700 hover:text-blue-800" rel="noreferrer">• Remix framework</a>, for making this project possible.</p>
-                                  <p><a target="_blank" href="https://nextjs.org" className="text-blue-700 hover:text-blue-800" rel="noreferrer">• Next.js framework</a>, for carrying the torch.</p>
-                                  <p><a target='_blank' href='https://tailwindcss.com/' className="text-blue-700 hover:text-blue-800" rel="noreferrer">• Tailwind CSS</a>, for making the design process a breeze.</p>
-                                  <p><a target="_blank" href="https://poolsuite.net/" className="text-blue-700 hover:text-blue-800" rel="noreferrer">• Poolsuite</a>, for inspiring this project's design and providing awesome music playlists.</p>
+                                  <p><a target="_blank" href="https://remix.run" className="text-blue-700 hover:text-blue-800 cursor-point" rel="noreferrer">• Remix framework</a>, for making this project possible.</p>
+                                  <p><a target="_blank" href="https://nextjs.org" className="text-blue-700 hover:text-blue-800 cursor-point" rel="noreferrer">• Next.js framework</a>, for carrying the torch.</p>
+                                  <p><a target='_blank' href='https://tailwindcss.com/' className="text-blue-700 hover:text-blue-800 cursor-point" rel="noreferrer">• Tailwind CSS</a>, for making the design process a breeze.</p>
+                                  <p><a target="_blank" href="https://poolsuite.net/" className="text-blue-700 hover:text-blue-800 cursor-point" rel="noreferrer">• Poolsuite</a>, for inspiring this project's design and providing awesome music playlists.</p>
                               </div>
                           </div>
                       </Draggable>
@@ -324,7 +324,7 @@ export const DesktopContainer = ({windowTitle}: DesktopContainerProps) => {
                         key={app.iconTitle}
                         id={`dock-icon-${index}`} 
                         onMouseDown={() => toggleWindowVisibilityViaId(index)} 
-                        className={windows[index].closed ? 'hidden' : "flex flex-col handle items-center os-icon p-2 hover:bg-gray-400 rounded-xl hover:bg-opacity-50 cursor-pointer" }
+                        className={windows[index].closed ? 'hidden' : "flex flex-col handle items-center os-icon p-2 hover:bg-gray-400 rounded-xl hover:bg-opacity-50 cursor-point" }
                         >
                           <Image src={app.iconImage} className="w-6 h-6 mx-auto pointer-events-none" alt='App icon' width="240" height="240"/>
                           <span className={windows[index].minimized ? 'rounded-full bg-black h-1 w-1 mt-9 absolute' : 'hidden'}>&nbsp;</span>
