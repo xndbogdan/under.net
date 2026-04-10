@@ -18,7 +18,7 @@ type Store = {
 }
 
 const useStore = create<Store>()((set) => ({
-  icons: Array(5).fill({ focused: false, clicks: 0, dragging: false }),
+  icons: Array(4).fill({ focused: false, clicks: 0, dragging: false }),
   setIcons: (icons) => set({ icons }),
   playlist: (() => {
     if (typeof window !== 'undefined') {
@@ -48,7 +48,7 @@ const useStore = create<Store>()((set) => ({
   },
   windows: [
     { focused: false, closed: false, minimized: false },
-    ...Array(4).fill({ focused: false, closed: true, minimized: false })
+    ...Array(3).fill({ focused: false, closed: true, minimized: false })
   ],
   setWindows: (windows) => set({ windows }),
   wallpaper: wallpapers[0],

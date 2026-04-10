@@ -169,7 +169,6 @@ export const DesktopContainer = ({ windowTitle }: DesktopContainerProps) => {
   const window1Ref = useRef<HTMLDivElement>(null);
   const window2Ref = useRef<HTMLDivElement>(null);
   const window3Ref = useRef<HTMLDivElement>(null);
-  const window4Ref = useRef<HTMLDivElement>(null);
 
   // Create refs for icons
   const iconRefs = useMemo(() =>
@@ -278,43 +277,6 @@ export const DesktopContainer = ({ windowTitle }: DesktopContainerProps) => {
               </Draggable>
               <Draggable handle=".handle" onMouseDown={(e) => { requestAnimationFrame(() => toggleWindowVisibility(e)); }} nodeRef={window3Ref}>
                 <div ref={window3Ref} id='window-3' className={windows[3].closed || windows[3].minimized ? 'hidden' : 'absolute p-1 border border-black mt-4 bg-gray-mac shadow-mac-os os-window w-full max-w-sm pointer-events-auto'} style={windows[3].focused ? { zIndex: 99 } : { zIndex: 10 }}>
-                  <div className="flex flex-row items-center pb-1 handle cursor-grab">
-                    <div className="w-6 h-6 mr-1 border border-black close-btn md:h-4 md:w-4 hover:invert hover:bg-white cursor-point" />
-                    <div className="w-6 h-6 mr-2 border border-black min-btn md:h-4 md:w-4 hover:invert hover:bg-white cursor-point hidden lg:block" />
-                    <div className="flex items-center flex-1 h-4">
-                      <div className="flex flex-col justify-between flex-1 h-2">
-                        <div className="border-t border-black"></div>
-                        <div className="border-t border-black"></div>
-                        <div className="border-t border-black"></div>
-                      </div>
-                    </div>
-                    <div className="ml-2 text-xs pr-1">{windowTitle}</div>
-                  </div>
-                  <div className="px-2 py-4 overflow-y-auto overflow-x-hidden text-sm bg-white border border-black max-h-80 select-full flex justify-center">
-                    <div
-                      className="stack"
-                      style={{ '--stacks': 3, 'minHeight': '3.5rem' } as React.CSSProperties}
-                    >
-                      <span className='pt-4' style={{ "--index": 0 } as React.CSSProperties}>under.net</span>
-                      <span className='pt-4' style={{ "--index": 1 } as React.CSSProperties}>under.net</span>
-                      <span className='pt-4' style={{ "--index": 2 } as React.CSSProperties}>under.net</span>
-                    </div>
-
-                  </div>
-                  <div className="flex flex-wrap text-xs py-2">
-                    <div className="w-full md:w-1/2 md:pr-1">
-                      <p>Version: under.net 2.0</p>
-                      <p>Built-in Memory: 768 MB</p>
-                    </div>
-                    <div className="w-full md:w-1/2 md:pl-1">
-                      <p>Next Rom 0.2 Alpha</p>
-
-                    </div>
-                  </div>
-                </div>
-              </Draggable>
-              <Draggable handle=".handle" onMouseDown={(e) => { requestAnimationFrame(() => toggleWindowVisibility(e)); }} nodeRef={window4Ref}>
-                <div ref={window4Ref} id='window-4' className={windows[4].closed || windows[4].minimized ? 'hidden' : 'absolute p-1 border border-black mt-4 bg-gray-mac shadow-mac-os os-window w-full max-w-sm pointer-events-auto'} style={windows[4].focused ? { zIndex: 99 } : { zIndex: 10 }}>
                   <div className="flex flex-row items-center pb-1 handle cursor-grab">
                     <div className="w-6 h-6 mr-1 border border-black close-btn md:h-4 md:w-4 hover:invert hover:bg-white cursor-point" />
                     <div className="w-6 h-6 mr-2 border border-black min-btn md:h-4 md:w-4 hover:invert hover:bg-white cursor-point hidden lg:block" />

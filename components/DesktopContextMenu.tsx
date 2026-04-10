@@ -82,7 +82,7 @@ export const DesktopContextMenu = () => {
   const openWallpaperWindow = () => {
     setMenu(m => ({ ...m, visible: false }));
     setWindows(windows.map((w, index) =>
-      index === 4 ? { ...w, focused: true, closed: false, minimized: false } : { ...w, focused: false }
+      index === 3 ? { ...w, focused: true, closed: false, minimized: false } : { ...w, focused: false }
     ));
   };
 
