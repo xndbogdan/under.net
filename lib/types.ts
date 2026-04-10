@@ -26,4 +26,14 @@ type DesktopContainerProps = {
   windowTitle: string;
 };
 
-export type { DesktopContainerProps, DropdownMenuProps, Tracklist, Track, Playlist };
+type Wallpaper = {
+  id: number;
+  className: string;
+  name: string;
+  author: string;
+  authorUrl?: string;
+  previewImage: string;
+  darkBackground?: boolean;
+};
+
+export type { DesktopContainerProps, DropdownMenuProps, Tracklist, Track, Playlist, Wallpaper };

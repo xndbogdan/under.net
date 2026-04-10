@@ -31,8 +31,9 @@ body {
 
 @font-face {
   font-family: "Chicago";
-  src: url("/fonts/ChicagoFLF.woff2") format("woff2"),
-    url("/fonts/ChicagoFLF.woff") format("woff");
+  src: url("https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9ka36eZAlyFJK9XwRDVuoBSPOT3WCzb6N0kAs5") format("woff2"),
+    url("https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9ksBTmkeXFIeVqtz7DimoyXd5Wf83gRUL0hJNk") format("woff"),
+    url("https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kgra78gQAhWmlC1SB4Zpba3OTx9eFwoMVvuks") format("truetype");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -51,19 +52,19 @@ body {
 }
 
 .cursor-grab {
-  cursor: url('/img/cursors/hand2.png'), auto !important;
+  cursor: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9k3GueCcfvGfEp0rICdqH1lvQBi4NFtos39wZe'), auto !important;
 }
 
 .cursor-grab:active {
-  cursor: url('/img/cursors/hand3.cur'), auto !important;
+  cursor: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kTPblFiaCSqmuQUMGbZHjPgOsWaENDY8cnVX2'), auto !important;
 }
 
 .cursor-point {
-  cursor: url('/img/cursors/hand.png'), auto !important;
+  cursor: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kmGl09qJjU5ifRYknAE8IV7FOGcpHXxrQBZ4P'), auto !important;
 }
 
 .cursor-default {
-  cursor: url('/img/cursors/arrow.png'), auto !important;
+  cursor: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kniLejXX8smhDkq3j6l4JFGVBZbu0pedWAyOM'), auto !important;
 }
 
 .select-none {
@@ -99,30 +100,63 @@ body {
 }
 
 .bg-tile-1 {
-  background-image: url('/img/background/tile-1.png');
+  background-image: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kMf7ty6cZ5xnodGOP6XrA4pkfJsWlwZvtDQhy');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .bg-tile-2 {
-  background-image: url('/img/background/tile-2.png');
+  background-image: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9k3HnhLlvGfEp0rICdqH1lvQBi4NFtos39wZeD');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .bg-tile-3 {
-  background-image: url('/img/background/undernet.png');
+  background-image: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kvOMZSK6Ty6w9FAxjPaeqoRcSXln0BCuEIp2D');
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
 }
 
 .bg-tile-4 {
-  background-image: url('/img/background/poolside-fm-pacific-breeze-edited.png');
+  background-image: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kREAdlFuwMajqye4v8CuoWVhPdriscZH7DS9b');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .bg-tile-5 {
-  background-image: url('/img/background/minecraft-dirt.png');
+  background-image: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9k3Gp6cKKvGfEp0rICdqH1lvQBi4NFtos39wZe');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .bg-tile-6 {
-  background-image: url('/img/background/minecraft-stone.png');
+  background-image: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9k41luTA9ZOzpPV5duFwJI7LQTCRfGnHxK1Elo');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.bg-tile-7 {
+  background-image: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9k4tmbLw9ZOzpPV5duFwJI7LQTCRfGnHxK1Elo');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.bg-tile-8 {
+  background-image: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kRpNetzNuwMajqye4v8CuoWVhPdriscZH7DS9');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.bg-tile-9 {
+  background-image: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kvBnFFE6Ty6w9FAxjPaeqoRcSXln0BCuEIp2D');
 }
 
 .os-window *::-webkit-scrollbar {
@@ -141,7 +175,7 @@ body {
   width: 14px;
   height: 40px;
   right: 0 !important;
-  background: url('/img/scrollbar.svg') no-repeat 50% #fff;
+  background: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kssA3aYXFIeVqtz7DimoyXd5Wf83gRUL0hJNk') no-repeat 50% #fff;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: pixelated;
   border-radius: 0;
@@ -149,7 +183,7 @@ body {
   border-top: 1px solid #000;
   border-left: 1px solid #000;
   border-bottom: 1px solid #000;
-  cursor: url('/img/cursors/hand2.png'), auto;
+  cursor: url('https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9k3GueCcfvGfEp0rICdqH1lvQBi4NFtos39wZe'), auto;
 }
 
 .scrollbars-hidden::-webkit-scrollbar {

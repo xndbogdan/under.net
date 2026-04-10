@@ -19,7 +19,7 @@ export const DropdownMenu = ({ windowTitle }: DropdownMenuProps) => {
             onMouseDown={ () => { setMenu(!menu) } }
           >
               <span>{windowTitle}</span>
-              <Image className="inline ml-1 group-hover:invert w-1" src="/img/arrow-down.png" height="5" width="3" alt='arrow down'/>
+              <Image className="inline ml-1 group-hover:invert w-1" src="https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9k8pj1nyU4bOHADiJeUdgISulQcLpnjGCxYry0" height="5" width="3" alt='arrow down'/>
           </div>
           <div className="flex-1 py-1"></div>
           <div className="py-1 pl-2 text-xs border-l border-black pr-2">
@@ -44,7 +44,15 @@ export const DropdownMenu = ({ windowTitle }: DropdownMenuProps) => {
                   >About</span>
               </li>
               <li>
-                  <span className="block py-1 px-4 border-b border-black text-gray-500">Settings</span>
+                  <span
+                      className="block py-1 px-4 border-b border-black hover:text-white hover:bg-black cursor-point"
+                      onMouseDown={() => {
+                          setMenu(false)
+                          setWindows(windows.map((window, index) => {
+                            return index === 4 ? { ...window, focused: true, closed: false } : window;
+                          }));
+                      }}
+                  >Settings</span>
               </li>
           </ul>
       </div>

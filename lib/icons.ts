@@ -1,22 +1,22 @@
 export const appIcons = [
   {
     iconTitle: 'Presentation.rtf',
-    iconImage: '/icons/Notes_Black.png',
+    iconImage: 'https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kufvfEwbm7zrMZB8NsqRj3KoPCfEwgTQJ2UxA',
     showOnDesktop: true,
   },
   {
     iconTitle: 'Music Player',
-    iconImage: '/icons/Play_Blue.png',
+    iconImage: 'https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kCBNkAtWGopf90uNaEtY73M15JR2UldjILyTQ',
     showOnDesktop: true,
   },
   {
     iconTitle: 'Credits.rtf',
-    iconImage: '/icons/Notes_Pink.png',
+    iconImage: 'https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kGCtyvCBHdfBXKNRDPW9AU13kabeYpQ0cgGu6',
     showOnDesktop: true,
   },
   {
-    iconTitle: 'About',
-    iconImage: '/icons/Wrench_Black.png',
+    iconTitle: 'Wallpaper',
+    iconImage: 'https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kBpPhAPRradq5QzTM3C8nFYykLfhbpHj6mlgW',
     showOnDesktop: false,
   }
 ]

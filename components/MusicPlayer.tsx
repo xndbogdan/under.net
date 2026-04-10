@@ -296,7 +296,7 @@ export const MusicPlayer = (props: { closed: boolean }) => {
           <p className="text-sm">{playlist.name}</p>
           <Image
             className="inline ml-1 w-1"
-            src="/img/arrow-down.png"
+            src="https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9k8pj1nyU4bOHADiJeUdgISulQcLpnjGCxYry0"
             height="5"
             width="3"
             alt="arrow down"
