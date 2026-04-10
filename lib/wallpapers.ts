@@ -2,14 +2,6 @@ import type { Wallpaper } from './types';
 
 export const wallpapers: Wallpaper[] = [
   {
-    id: 1,
-    className: 'bg-tile-1',
-    name: 'under.net',
-    author: 'under.net',
-    authorUrl: 'https://soundcloud.com/underdotnet',
-    previewImage: 'https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kMf7ty6cZ5xnodGOP6XrA4pkfJsWlwZvtDQhy',
-  },
-  {
     id: 2,
     className: 'bg-tile-2',
     name: 'Blue Cube',
