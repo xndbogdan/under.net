@@ -30,6 +30,17 @@ body {
 }
 
 @font-face {
+  font-family: "Controller Ext W01 Four Oblique";
+  src: url("https://db.onlinewebfonts.com/t/df662dbb1fd6a01a081dd75f817453e9.eot");
+  src: url("https://db.onlinewebfonts.com/t/df662dbb1fd6a01a081dd75f817453e9.eot?#iefix") format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/df662dbb1fd6a01a081dd75f817453e9.woff2") format("woff2"),
+    url("https://db.onlinewebfonts.com/t/df662dbb1fd6a01a081dd75f817453e9.woff") format("woff"),
+    url("https://db.onlinewebfonts.com/t/df662dbb1fd6a01a081dd75f817453e9.ttf") format("truetype"),
+    url("https://db.onlinewebfonts.com/t/df662dbb1fd6a01a081dd75f817453e9.svg#Controller Ext W01 Four Oblique") format("svg");
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Chicago";
   src: url("https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9ka36eZAlyFJK9XwRDVuoBSPOT3WCzb6N0kAs5") format("woff2"),
     url("https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9ksBTmkeXFIeVqtz7DimoyXd5Wf83gRUL0hJNk") format("woff"),
@@ -210,7 +221,7 @@ body {
 .stack span {
   grid-row-start: 1;
   grid-column-start: 1;
-  font-size: 4rem;
+  font-size: 3rem;
   --stack-height: calc(100% / var(--stacks) - 1px);
   --inverse-index: calc(calc(var(--stacks) - 1) - var(--index));
   --clip-top: calc(var(--stack-height) * var(--index));

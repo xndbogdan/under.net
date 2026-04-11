@@ -277,7 +277,7 @@ export const MusicPlayer = (props: { closed: boolean }) => {
           ref={displayTextContainer}
         >
           <div className="opacity-75 px-2">
-            &#47;&#47;&#47; under.net Player - Paused &#47;&#47;&#47;
+            &#47;&#47;&#47; Next OS Player - Paused &#47;&#47;&#47;
           </div>
         </div>
       </div>

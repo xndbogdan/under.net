@@ -16,6 +16,7 @@ const config: Config = {
     },
     fontFamily: {
       'chicago': ["Chicago" ],
+      'controller': ["Controller Ext W01 Four Oblique"],
       'sans': ["Helvetica", "Arial"],
     },
   },

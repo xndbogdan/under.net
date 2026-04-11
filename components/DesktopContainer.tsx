@@ -226,7 +226,7 @@ export const DesktopContainer = ({ windowTitle }: DesktopContainerProps) => {
                         <div className="border-t border-black"></div>
                       </div>
                     </div>
-                    <div className="ml-2 text-xs pr-1">{windowTitle}</div>
+                    <div className="ml-2 text-xs pr-1 font-controller">{windowTitle}</div>
                   </div>
                   <div className="p-2 overflow-y-auto text-sm bg-white border border-black select-full">
                     <p>Something something under.net.</p>
@@ -248,7 +248,7 @@ export const DesktopContainer = ({ windowTitle }: DesktopContainerProps) => {
                         <div className="border-t border-black"></div>
                       </div>
                     </div>
-                    <div className="ml-2 text-xs pr-1">{windowTitle}</div>
+                    <div className="ml-2 text-xs pr-1 font-controller">{windowTitle}</div>
                   </div>
                   <MusicPlayer closed={windows[1].closed} />
                 </div>
@@ -265,7 +265,7 @@ export const DesktopContainer = ({ windowTitle }: DesktopContainerProps) => {
                         <div className="border-t border-black"></div>
                       </div>
                     </div>
-                    <div className="ml-2 text-xs pr-1">{windowTitle}</div>
+                    <div className="ml-2 text-xs pr-1 font-controller">{windowTitle}</div>
                   </div>
                   <div className="p-2 overflow-y-auto text-sm bg-white border border-black max-h-80 select-full">
                     <p className="mb-2 text-lg">Credits</p>
@@ -288,16 +288,16 @@ export const DesktopContainer = ({ windowTitle }: DesktopContainerProps) => {
                         <div className="border-t border-black"></div>
                       </div>
                     </div>
-                    <div className="ml-2 text-xs pr-1">{windowTitle}</div>
+                    <div className="ml-2 text-xs pr-1 font-controller">{windowTitle}</div>
                   </div>
                   <div className="px-2 py-4 overflow-y-auto overflow-x-hidden text-sm bg-white border border-black max-h-80 select-full flex justify-center">
                     <div
                       className="stack"
                       style={{ '--stacks': 3, 'minHeight': '3.5rem' } as React.CSSProperties}
                     >
-                      <span className='pt-4' style={{ "--index": 0 } as React.CSSProperties}>under.net</span>
-                      <span className='pt-4' style={{ "--index": 1 } as React.CSSProperties}>under.net</span>
-                      <span className='pt-4' style={{ "--index": 2 } as React.CSSProperties}>under.net</span>
+                      <span className='pt-4 font-controller' style={{ "--index": 0 } as React.CSSProperties}>under.net</span>
+                      <span className='pt-4 font-controller' style={{ "--index": 1 } as React.CSSProperties}>under.net</span>
+                      <span className='pt-4 font-controller' style={{ "--index": 2 } as React.CSSProperties}>under.net</span>
                     </div>
 
                   </div>
@@ -325,7 +325,7 @@ export const DesktopContainer = ({ windowTitle }: DesktopContainerProps) => {
                         <div className="border-t border-black"></div>
                       </div>
                     </div>
-                    <div className="ml-2 text-xs pr-1">under.net</div>
+                    <div className="ml-2 text-xs pr-1 font-controller font-controller">under.net</div>
                   </div>
                   <WallpaperSettings />
                 </div>
