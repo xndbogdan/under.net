@@ -54,6 +54,13 @@ export const DesktopContextMenu = () => {
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
       const target = e.target as Element;
+
+      // Dismiss if menu is visible and touch is outside it
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setMenu(m => ({ ...m, visible: false }));
+        return;
+      }
+
       if (!isDesktopBackground(target)) return;
       const touch = e.touches[0];
       const startX = touch.clientX;

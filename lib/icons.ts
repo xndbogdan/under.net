@@ -15,6 +15,11 @@ export const appIcons = [
     showOnDesktop: true,
   },
   {
+    iconTitle: 'About',
+    iconImage: 'https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kmOwbo3HJjU5ifRYknAE8IV7FOGcpHXxrQBZ4',
+    showOnDesktop: false,
+  },
+  {
     iconTitle: 'Wallpaper',
     iconImage: 'https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9kBpPhAPRradq5QzTM3C8nFYykLfhbpHj6mlgW',
     showOnDesktop: false,

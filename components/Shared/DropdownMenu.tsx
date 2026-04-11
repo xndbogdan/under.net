@@ -52,7 +52,7 @@ export const DropdownMenu = ({ windowTitle }: DropdownMenuProps) => {
                             return index === 4 ? { ...window, focused: true, closed: false } : window;
                           }));
                       }}
-                  >Settings</span>
+                  >Wallpapers</span>
               </li>
           </ul>
       </div>
