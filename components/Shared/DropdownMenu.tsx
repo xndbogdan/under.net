@@ -32,12 +32,24 @@ export const DropdownMenu = ({ windowTitle }: DropdownMenuProps) => {
       <div id="dropdown" className={ menu ? 'z-10 w-44 bg-gray-mac shadow-mac-os absolute' : 'hidden' }>
           <ul className="text-xs" aria-labelledby="dropdownDefault">
               <li>
+                  <span 
+                      className="block py-1 px-4 border-b border-black hover:text-white hover:bg-black cursor-pointer" 
+                      onMouseDown={() => { 
+                          setMenu(false)
+                          
+                          setWindows(windows.map((window, index) => {
+                            return index === 3 ? { ...window, focused: true, closed: false } : window;
+                          }));
+                      }}
+                  >About</span>
+              </li>
+              <li>
                   <span
                       className="block py-1 px-4 border-b border-black hover:text-white hover:bg-black cursor-point"
                       onMouseDown={() => {
                           setMenu(false)
                           setWindows(windows.map((window, index) => {
-                            return index === 3 ? { ...window, focused: true, closed: false } : window;
+                            return index === 4 ? { ...window, focused: true, closed: false } : window;
                           }));
                       }}
                   >Settings</span>
