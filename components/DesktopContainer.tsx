@@ -230,9 +230,10 @@ export const DesktopContainer = ({ windowTitle }: DesktopContainerProps) => {
                   </div>
                   <div className="p-2 overflow-y-auto text-sm bg-white border border-black select-full">
                     <p>Something something under.net.</p>
-                    <p className='mt-2'>For business inqueries, join the <a className='text-blue-700 cursor-point' target='_blank' href='#' rel="noreferrer">Discord server</a>.</p>
+                    <p className='mt-2'>For business inqueries, join the <a className='text-blue-700 cursor-point' target='_blank' href='https://discord.gg/M7v6TtxM' rel="noreferrer">Discord server</a>.</p>
                     <p className="mt-4">Links:</p>
-                    <p className="mt-2"><a className='text-blue-700 cursor-point' target='_blank' href='#' rel="noreferrer">Grab some merch here</a></p>
+                    <p className="mt-2"><a className='text-blue-700 cursor-point' target='_blank' href='https://soundcloud.com/underdotnet' rel="noreferrer">Soundcloud</a></p>
+                    {/* <p className="mt-2"><a className='text-blue-700 cursor-point' target='_blank' href='#' rel="noreferrer">Grab some merch here</a></p> */}
                   </div>
                 </div>
               </Draggable>
