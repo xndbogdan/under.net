@@ -286,7 +286,8 @@ body {
   background: transparent;
 }
 
-.mac-input:focus {
+.mac-input:focus,
+.mac-input:focus-visible {
   outline: none;
 }
 
@@ -429,25 +430,4 @@ body {
 
 .font-dseg14 {
   font-family: var(--font-dseg14), monospace;
-}
-
-/* Input Focus Variants */
-.mac-input.input-mint:focus::-webkit-slider-thumb {
-  box-shadow: 0px 0px 7px 3px rgba(1, 215, 176, 0.4);
-}
-.mac-input.input-mint:focus::-moz-range-thumb {
-  box-shadow: 0px 0px 7px 3px rgba(1, 215, 176, 0.4);
-}
-.mac-input.input-mint:focus::-ms-thumb {
-  box-shadow: 0px 0px 7px 3px rgba(1, 215, 176, 0.4);
-}
-
-.mac-input.input-blue:focus::-webkit-slider-thumb {
-  box-shadow: 0px 0px 7px 3px rgba(0, 101, 196, 0.4);
-}
-.mac-input.input-blue:focus::-moz-range-thumb {
-  box-shadow: 0px 0px 7px 3px rgba(0, 101, 196, 0.4);
-}
-.mac-input.input-blue:focus::-ms-thumb {
-  box-shadow: 0px 0px 7px 3px rgba(0, 101, 196, 0.4);
 }
