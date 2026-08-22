@@ -128,5 +128,16 @@ export const playlists: Playlist[] = [
     id: 1,
     name: "under.net",
     tracks: underNet,
+    appearance: {
+      primaryColor: "bg-mint-dark",
+      textColor: "text-mint-dark",
+      barsColors: [
+        { stop: 0, color: "#01d7b0" },
+        { stop: 0.1, color: "#fff" },
+        { stop: 1, color: "#fff" },
+      ],
+      inputClass: "input-mint",
+      gradientFrom: "from-mint-dark",
+    },
   },
 ];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { throttle } from "@/lib/throttle";
 import AudioSpectrum from "./Shared/AudioSpectrum";
 import type { Track } from "@/lib/types";
@@ -8,68 +8,371 @@ import { playlists } from "@/lib/tracklist";
 import Image from "next/image";
 import { useStore } from "@/lib/state";
 
-export const MusicPlayer = (props: { closed: boolean }) => {
+const LCD_SLOTS = 24;
+
+const SPECIAL_CHAR_MAP: Record<string, string> = {
+  // Stars, sparks & asterisks
+  "✯": "*",
+  "★": "*",
+  "☆": "*",
+  "✦": "*",
+  "✧": "*",
+  "✶": "*",
+  "✴": "*",
+  "✹": "*",
+  "✪": "*",
+  "✫": "*",
+  "✬": "*",
+
+  // Bullets & dots
+  "•": "*",
+  "●": "*",
+  "○": "*",
+  "·": ".",
+  "∙": ".",
+  "・": ".",
+
+  // Hearts & music notes
+  "♥": "*",
+  "♡": "*",
+  "♪": "*",
+  "♫": "*",
+  "♬": "*",
+
+  // Quotes & apostrophes
+  "’": "'",
+  "‘": "'",
+  "‚": "'",
+  "‛": "'",
+  "“": '"',
+  "”": '"',
+  "„": '"',
+  "‟": '"',
+  "«": '"',
+  "»": '"',
+
+  // Dashes & hyphens
+  "–": "-",
+  "—": "-",
+  "−": "-",
+  "─": "-",
+  "ー": "-",
+  "~": "-",
+
+  // Slashes & pipes
+  "|": "|",
+  "│": "|",
+  "¦": "|",
+  "／": "/",
+  "＼": "\\",
+
+  // Right arrows & play pointers
+  "→": ">",
+  "➡": ">",
+  "➔": ">",
+  "▶": ">",
+  "►": ">",
+  "▸": ">",
+  "▻": ">",
+  "⇒": ">",
+  "↦": ">",
+  "↝": ">",
+  "⇢": ">",
+  "˃": ">",
+  "›": ">",
+
+  // Left arrows
+  "←": "<",
+  "⬅": "<",
+  "◀": "<",
+  "◄": "<",
+  "◂": "<",
+  "◅": "<",
+  "⇐": "<",
+  "↤": "<",
+  "⇠": "<",
+  "˂": "<",
+  "‹": "<",
+
+  // Up arrows
+  "↑": "^",
+  "⬆": "^",
+  "▲": "^",
+  "▴": "^",
+  "△": "^",
+  "⇑": "^",
+  "⇡": "^",
+  "ˆ": "^",
+
+  // Down arrows (14-segment 'V' chevron)
+  "↓": "V",
+  "⬇": "V",
+  "▼": "V",
+  "▾": "V",
+  "▽": "V",
+  "⇓": "V",
+  "⇣": "V",
+};
+
+export function sanitizeLcdText(raw: string): string {
+  if (!raw) return "";
+
+  // 1. Direct symbol mapping
+  let text = raw;
+  for (const [char, replacement] of Object.entries(SPECIAL_CHAR_MAP)) {
+    if (text.includes(char)) {
+      text = text.replaceAll(char, replacement);
+    }
+  }
+
+  // 2. Normalize unicode diacritics (é -> e, ü -> u, ñ -> n, etc.)
+  text = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  // 3. Fallback: Any remaining non-ASCII character becomes star *
+  text = text.replace(/[^\x20-\x7E]/g, "*");
+
+  return text;
+}
+
+function splitIntoLcdPages(text: string, maxLen: number = LCD_SLOTS): string[] {
+  const clean = sanitizeLcdText(text);
+  if (!clean || clean.length <= maxLen) {
+    return [clean];
+  }
+
+  const words = clean.split(" ");
+  const pages: string[] = [];
+  let currentPage = "";
+
+  for (const word of words) {
+    if (!currentPage) {
+      if (word.length > maxLen) {
+        let w = word;
+        while (w.length > maxLen) {
+          pages.push(w.slice(0, maxLen));
+          w = w.slice(maxLen);
+        }
+        currentPage = w;
+      } else {
+        currentPage = word;
+      }
+    } else if ((currentPage + " " + word).length <= maxLen) {
+      currentPage += " " + word;
+    } else {
+      pages.push(currentPage);
+      if (word.length > maxLen) {
+        let w = word;
+        while (w.length > maxLen) {
+          pages.push(w.slice(0, maxLen));
+          w = w.slice(maxLen);
+        }
+        currentPage = w;
+      } else {
+        currentPage = word;
+      }
+    }
+  }
+
+  if (currentPage) {
+    pages.push(currentPage);
+  }
+
+  return pages.length > 0 ? pages : [clean];
+}
+
+const LcdSegmentLine = ({
+  text,
+  className,
+}: {
+  text: string;
+  className?: string;
+}) => {
+  const [prevText, setPrevText] = useState<string>("");
+  const [currentText, setCurrentText] = useState<string>(text);
+  const [decayKey, setDecayKey] = useState<number>(0);
+
+  useEffect(() => {
+    if (text !== currentText) {
+      setPrevText(currentText);
+      setCurrentText(text);
+      setDecayKey((k) => k + 1);
+    }
+  }, [text, currentText]);
+
+  const activeChars = sanitizeLcdText(currentText || "")
+    .toUpperCase()
+    .padEnd(LCD_SLOTS, " ")
+    .slice(0, LCD_SLOTS)
+    .split("");
+
+  const prevChars = prevText
+    ? sanitizeLcdText(prevText || "")
+        .toUpperCase()
+        .padEnd(LCD_SLOTS, " ")
+        .slice(0, LCD_SLOTS)
+        .split("")
+    : null;
+
+  return (
+    <div
+      className={`flex items-center select-none font-dseg14 text-sm ${className || ""}`}
+    >
+      {activeChars.map((char, index) => {
+        const prevChar = prevChars ? prevChars[index] : null;
+        return (
+          <span
+            key={index}
+            className="relative inline-flex h-6 w-[14px] flex-shrink-0 items-center justify-center"
+          >
+            {/* 1. Permanent background unlit 14-segment cell */}
+            <span className="pointer-events-none absolute inset-0 flex select-none items-center justify-center opacity-25">
+              ~
+            </span>
+
+            {/* 2. Decaying ghost trail from previous page transition */}
+            {prevChar && prevChar !== " " && prevChar !== char && (
+              <span
+                key={`${decayKey}-${index}`}
+                className="animate-lcd-decay pointer-events-none absolute inset-0 flex select-none items-center justify-center opacity-80"
+              >
+                {prevChar}
+              </span>
+            )}
+
+            {/* 3. Active lit character with phosphor glow */}
+            <span className="lcd-glow relative z-10">
+              {char === " " ? "\u00A0" : char}
+            </span>
+          </span>
+        );
+      })}
+    </div>
+  );
+};
+
+export const MusicPlayer = (props?: { closed?: boolean }) => {
   const sleep = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
-  const randomTrackIndex = 0;
   const musicApiEndpoint = process.env.NEXT_PUBLIC_TRACKLIST_ENDPOINT;
 
-  const [menu, setMenu] = useState(false);
+  const [menu, setMenu] = useState<boolean>(false);
   const { playlist, setPlaylist, currentVolume, setCurrentVolume } = useStore();
-  const [selectedPlaylistLength, setSelectedPlaylistLength] = useState(
+  const [selectedPlaylistLength, setSelectedPlaylistLength] = useState<number>(
     playlist.tracks.length
   );
-  const [trackIndex, setTrackIndex] = useState(randomTrackIndex);
-  const [selectedTrack, setSelectedTrack] = useState(
+  const [trackIndex, setTrackIndex] = useState<number>(0);
+  const [selectedTrack, setSelectedTrack] = useState<Track>(
     playlist.tracks[trackIndex] ?? null
   );
 
-  const display = selectedTrack ? selectedTrack.artist + " - " + selectedTrack.title : "Player Offline";
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [trackProgress, setTrackProgress] = useState("0%");
-  const [currentTrackTime, setCurrentTrackTime] = useState(0);
-  const [currentTrackDuration, setCurrentTrackDuration] = useState(0);
+  const display = selectedTrack
+    ? `${selectedTrack.artist} - ${selectedTrack.title}`
+    : "Player Offline";
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [trackProgress, setTrackProgress] = useState<string>("0%");
+  const [currentTrackTime, setCurrentTrackTime] = useState<number>(0);
+  const [currentTrackDuration, setCurrentTrackDuration] = useState<number>(0);
+
+  const [pageIndex, setPageIndex] = useState<number>(0);
+  const lcdPages = useMemo(
+    () => splitIntoLcdPages(display, LCD_SLOTS),
+    [display]
+  );
+
   const audio = useRef<HTMLAudioElement>(null);
   const displayText = useRef<HTMLAnchorElement>(null);
   const displayTextContainer = useRef<HTMLDivElement>(null);
   const progressBar = useRef<HTMLDivElement>(null);
   const progressBarContainer = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const stationBtnRef = useRef<HTMLDivElement>(null);
   const previousWaveformUrl = useRef<string>(
     selectedTrack?.audio_url || selectedTrack?.waveform_url || ""
   );
 
-  const updateTrackProgressRef = useRef(
-    throttle((event: React.ChangeEvent<HTMLAudioElement>): void => {
-      const currentTime = event.target.currentTime;
-      const duration = event.target.duration;
-      setTrackProgress(((currentTime + 0.25) / duration) * 100 + "%");
-      setCurrentTrackDuration(duration);
-      setCurrentTrackTime(currentTime);
-    }, 200)
+  // Close station dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    if (!menu) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node) &&
+        stationBtnRef.current &&
+        !stationBtnRef.current.contains(e.target as Node)
+      ) {
+        setMenu(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menu]);
+
+  // Pause playback when window is closed
+  useEffect(() => {
+    if (props?.closed && isPlaying) {
+      if (audio.current) {
+        audio.current.pause();
+      }
+      setIsPlaying(false);
+    }
+  }, [props?.closed, isPlaying]);
+
+  useEffect(() => {
+    setPageIndex(0);
+  }, [display]);
+
+  useEffect(() => {
+    if (lcdPages.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setPageIndex((prev) => (prev + 1) % lcdPages.length);
+    }, 2200);
+
+    return () => clearInterval(interval);
+  }, [lcdPages]);
+
+  const updateTrackProgress = useMemo(
+    () =>
+      throttle((event: React.ChangeEvent<HTMLAudioElement>): void => {
+        const currentTime = event.target.currentTime;
+        const duration = event.target.duration;
+        if (duration) {
+          setTrackProgress(((currentTime + 0.25) / duration) * 100 + "%");
+          setCurrentTrackDuration(duration);
+          setCurrentTrackTime(currentTime);
+        }
+      }, 200),
+    []
   );
 
-  const updateTrackProgress = (event: React.ChangeEvent<HTMLAudioElement>) => {
-    if (props.closed) {
-      if (isPlaying) {
-        togglePlay();
-      }
-    }
-    updateTrackProgressRef.current(event);
-  };
-
-  const updateSongPosition = (event: React.MouseEvent<HTMLElement>) => {
+  const updateSongPosition = (event: React.MouseEvent<HTMLElement>): void => {
     if (!(event.target instanceof Element)) {
       return;
     }
     let boundingRect = event.target.getBoundingClientRect();
     let percentage = (event.clientX - boundingRect.left) / boundingRect.width;
-    if (!audio.current) {
+    if (!audio.current || !isFinite(audio.current.duration)) {
       return;
     }
-    audio.current.currentTime = percentage * audio.current.duration;
+    const newTime = percentage * audio.current.duration;
+    if (isFinite(newTime)) {
+      audio.current.currentTime = newTime;
+    }
   };
 
-  const convertDuration = (time: number) => {
+  const convertDuration = (time: number): string => {
     let mins = Math.floor(time / 60);
     let secs = Math.floor(time % 60);
     let returnResult = mins < 10 ? "0" + String(mins) : String(mins);
@@ -79,16 +382,16 @@ export const MusicPlayer = (props: { closed: boolean }) => {
   };
 
   const getTrackUrl = useCallback(
-    (selectedTrack: Track) => {
+    (selectedTrack: Track): string => {
       if (!selectedTrack.waveform_url) {
-        return musicApiEndpoint + selectedTrack.audio_url!;
+        return (musicApiEndpoint || "") + selectedTrack.audio_url!;
       }
       return (
-        musicApiEndpoint +
+        (musicApiEndpoint || "") +
         selectedTrack.waveform_url!.split("/")[3].replace("_m.png", "")
       );
     },
-    [musicApiEndpoint] // Add dependencies here
+    [musicApiEndpoint]
   );
 
   // Convert linear volume (0-1) to logarithmic scale for better human perception
@@ -101,7 +404,16 @@ export const MusicPlayer = (props: { closed: boolean }) => {
     return Math.exp(minv + scale * (value - minp));
   };
 
-  const togglePlay = () => {
+  const changeVolume = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const linearVolume = parseFloat(event.target.value);
+    const logScaledVolume = logVolume(linearVolume);
+    if (audio.current) {
+      audio.current.volume = logScaledVolume;
+    }
+    setCurrentVolume(linearVolume);
+  };
+
+  const togglePlay = (): void => {
     if (!audio.current || !selectedTrack) {
       return;
     }
@@ -120,21 +432,20 @@ export const MusicPlayer = (props: { closed: boolean }) => {
     }
   };
 
-  const nextTrack = async () => {
+  const nextTrack = async (): Promise<void> => {
     if (trackIndex >= playlist.tracks.length - 1) {
       return;
     }
     setSelectedTrack(playlist.tracks[trackIndex + 1]);
     setTrackIndex(trackIndex + 1);
     if (isPlaying && audio.current?.ended) {
-      // We need to wait for a bit and then make the audio player play (togglePlay?)
       await sleep(200);
       setIsPlaying(true);
       audio.current?.play();
     }
   };
 
-  const previousTrack = () => {
+  const previousTrack = (): void => {
     if (trackIndex <= 0) {
       return;
     }
@@ -142,161 +453,162 @@ export const MusicPlayer = (props: { closed: boolean }) => {
     setTrackIndex(trackIndex - 1);
   };
 
-  const changePlaylist = async (id: number) => {
+  const changePlaylist = async (id: number): Promise<void> => {
     setMenu(false);
     if (playlist.id === id) {
       return;
     }
-    const newPlaylist = playlists.find((playlist) => playlist.id === id);
+    const newPlaylist = playlists.find((pl) => pl.id === id);
     if (!newPlaylist) {
       return;
     }
+
     if (isPlaying) {
-      togglePlay();
+      audio.current?.pause();
+      setIsPlaying(false);
     }
+
+    setTrackProgress("0%");
+    setCurrentTrackTime(0);
+    setCurrentTrackDuration(0);
+
     setPlaylist(newPlaylist);
     setSelectedPlaylistLength(newPlaylist.tracks.length);
     setSelectedTrack(newPlaylist.tracks[0]);
     setTrackIndex(0);
-    await sleep(50);
-    // set player to beginning of track
+
     if (audio.current) {
+      audio.current.pause();
       audio.current.currentTime = 0;
+      audio.current.src = getTrackUrl(newPlaylist.tracks[0]);
     }
   };
 
   useEffect(() => {
-    if (typeof document !== "undefined") {
-      const musicPlayer = document.getElementById(
-        "music-player"
-      ) as HTMLAudioElement | null;
-      if (musicPlayer) {
-        musicPlayer.volume = logVolume(currentVolume);
-      }
-    }
-
-    // Add event listeners and cleanup
-    const audioElement = audio.current;
-    if (!audioElement) {
-      return;
-    }
-
-    const onEnded = () => setIsPlaying(false);
-    audioElement.addEventListener("ended", onEnded);
-    return () => {
-      audioElement.removeEventListener("ended", onEnded);
-    };
-  }, [props.closed, isPlaying, selectedTrack?.artist, selectedTrack?.title]);
-
-  useEffect(() => {
-    const silentlyPause = () => {
-      if (!audio.current) {
+    const handleTrackChange = async () => {
+      if (!audio.current || !selectedTrack) {
         return;
       }
-      audio.current.pause();
+
+      const prevVolume = audio.current.volume;
+
+      if (audio.current.src !== getTrackUrl(selectedTrack)) {
+        audio.current.src = getTrackUrl(selectedTrack);
+        audio.current.volume = prevVolume;
+      }
+
+      const trackUrl = selectedTrack.waveform_url || selectedTrack.audio_url;
+      if (trackUrl === previousWaveformUrl.current) {
+        previousWaveformUrl.current = trackUrl || "";
+      }
+
+      if (isPlaying) {
+        audio.current.pause();
+        audio.current.volume = prevVolume;
+        await sleep(200);
+        await audio.current.play();
+        audio.current.volume = prevVolume;
+      }
     };
 
-    const silentlyPlay = () => {
-      if (!audio.current) {
-        return;
-      }
-      audio.current.play();
-    };
-
-    if (!selectedTrack) {
-      return;
-    }
-    if (audio.current?.src !== getTrackUrl(selectedTrack)) {
-      if (!audio.current) {
-        return;
-      }
-      audio.current.src = getTrackUrl(selectedTrack);
-    }
-    const trackUrl = selectedTrack.waveform_url || selectedTrack.audio_url;
-    if (trackUrl === previousWaveformUrl.current) {
-      previousWaveformUrl.current = trackUrl;
-    }
-    if (isPlaying) {
-      silentlyPause();
-      sleep(200);
-      silentlyPlay();
-    }
+    handleTrackChange();
   }, [trackIndex, isPlaying, getTrackUrl, selectedTrack, playlist]);
 
+  // Initialize volume on audio ref
+  useEffect(() => {
+    if (audio.current) {
+      const logScaledVolume = logVolume(currentVolume);
+      audio.current.volume = logScaledVolume;
+    }
+  }, [currentVolume]);
+
+  const currentBarsColor = playlist.appearance?.barsColors || [
+    { stop: 0, color: "#01d7b0" },
+    { stop: 0.1, color: "#fff" },
+    { stop: 1, color: "#fff" },
+  ];
 
   return (
-    <div className="px-2">
-      <div className="bg-gray-900 border-2 border-gray-600 my-2">
+    <div className="font-chicago z-10 px-2">
+      <div className="relative my-2 overflow-hidden border-2 border-gray-600 bg-gray-900 shadow-inner">
+        {/* Glossy acrylic glass reflection */}
         <div
-          className=" h-8 text-blue-300 px-2 flex items-center"
-          ref={displayTextContainer}
+          className="pointer-events-none absolute inset-0 z-30 select-none"
+          style={{
+            background:
+              "linear-gradient(225deg, rgba(255, 255, 255, 0.155) 0%, rgba(255, 255, 255, 0.045) 44%, rgba(255, 255, 255, 0) 45%)",
+          }}
+          aria-hidden="true"
+        />
+
+        <div
+          className={
+            "relative flex h-8 items-center overflow-hidden px-2 select-none " +
+            (playlist.appearance?.textColor || "text-mint-dark")
+          }
         >
           <a
             target="_blank"
             href={selectedTrack?.permalink_url || "#"}
-            className="opacity-75 cursor-point truncate"
-            ref={displayText}
+            className="w-full cursor-point overflow-hidden whitespace-nowrap"
             rel="noreferrer"
+            title={display}
           >
-            <span className="pr-16">{display}</span>
+            <LcdSegmentLine text={lcdPages[pageIndex] || display} />
           </a>
         </div>
         <div
           className={
             isPlaying
-              ? "h-8 text-blue-300 flex items-center justify-center"
+              ? "relative flex h-8 items-center justify-start overflow-hidden px-2 select-none " +
+                (playlist.appearance?.textColor || "text-mint-dark")
               : "hidden"
           }
           ref={displayTextContainer}
         >
-          <div>
-            <AudioSpectrum
-              id="audio-canvas"
-              height={25}
-              width={340}
-              audioId={"music-player"}
-              capColor={"2564eb"}
-              capHeight={2}
-              meterWidth={2}
-              meterCount={512}
-              meterColor={[
-                { stop: 0, color: "#2564eb" },
-                { stop: 0.1, color: "#fff" },
-                { stop: 1, color: "#fff" },
-              ]}
-              gap={2}
-            />
-          </div>
+          <AudioSpectrum
+            id="audio-canvas"
+            height={24}
+            width={336}
+            audioId={"music-player"}
+            capColor={playlist.appearance?.barsColors?.[0]?.color || "#01d7b0"}
+            capHeight={2}
+            meterWidth={10}
+            meterCount={24}
+            meterColor={currentBarsColor}
+            gap={4}
+          />
         </div>
         <div
           className={
             !isPlaying
-              ? "h-8 text-blue-300 flex items-center justify-start"
+              ? "relative flex h-8 items-center justify-start overflow-hidden px-2 select-none " +
+                (playlist.appearance?.textColor || "text-mint-dark")
               : "hidden"
           }
           ref={displayTextContainer}
         >
-          <div className="opacity-75 px-2">
-            &#47;&#47;&#47; Next OS Player - Paused &#47;&#47;&#47;
-          </div>
+          <LcdSegmentLine text="NEXT OS PLAYER - PAUSED" />
         </div>
       </div>
+
       <div className="flex items-center py-1">
-        <p className="text-sm">Station:&nbsp;</p>
+        <p className="text-sm select-none">Station:&nbsp;</p>
         <div
+          ref={stationBtnRef}
           onMouseDown={() => {
             setMenu(!menu);
           }}
           className={
             menu
-              ? "bg-gray-400 flex items-center px-1 cursor-point"
-              : "hover:invert bg-gray-mac flex items-center px-1 cursor-point"
+              ? "flex cursor-point items-center bg-gray-400 px-1"
+              : "bg-gray-mac flex cursor-point items-center px-1 hover:invert"
           }
         >
           <p className="text-sm">{playlist.name}</p>
           <Image
-            className="inline ml-1 w-1"
-            src="https://dwc71k9eqn.ufs.sh/f/JxylFZcO3S9k8pj1nyU4bOHADiJeUdgISulQcLpnjGCxYry0"
+            className="ml-1 inline w-1"
+            src="/img/arrow-down.png"
             height="5"
             width="3"
             alt="arrow down"
@@ -304,44 +616,56 @@ export const MusicPlayer = (props: { closed: boolean }) => {
         </div>
         <div
           id="dropdown"
+          ref={dropdownRef}
           className={
             menu
-              ? "z-10 w-auto bg-gray-mac shadow-mac-os absolute mt-12 ml-16"
+              ? "shadow-mac-os bg-gray-mac absolute z-10 mt-30 ml-16 w-44"
               : "hidden"
           }
         >
           <ul className="text-xs" aria-labelledby="dropdownDefault">
-            <li onMouseDown={() => changePlaylist(1)}>
-              <span className="block py-1 px-4 border-b border-black hover:text-white hover:bg-black cursor-point">
-                under.net
-              </span>
-            </li>
+            {playlists.map((pl) => (
+              <li key={pl.id} onMouseDown={() => changePlaylist(pl.id)}>
+                <span className="block cursor-point border-b border-black px-4 py-1 hover:bg-black hover:text-white">
+                  {pl.name}
+                </span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
 
       <div
-        className="w-full h-2 bg-black cursor-point"
+        className="relative h-2 w-full cursor-point overflow-hidden border-b border-white/20 bg-black shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]"
         ref={progressBarContainer}
         onMouseUp={updateSongPosition}
       >
         <div
           ref={progressBar}
-          className="bg-blue-300 h-2 pointer-events-none"
+          className={
+            "pointer-events-none h-full transition-all duration-75 " +
+            (playlist.appearance?.primaryColor || "bg-mint-dark")
+          }
           style={{ width: trackProgress }}
         ></div>
       </div>
-      <div
-        style={
-          currentTrackDuration ? { display: "block" } : { display: "none" }
-        }
-      >
-        {convertDuration(currentTrackTime)} /{" "}
-        {convertDuration(currentTrackDuration)}
-      </div>
-      <div className="flex flex-row justify-between items-center">
-        <div className="flex flex-row space-x-4 text-sm mt-2 pb-2">
-          <button className="cursor-point" onClick={previousTrack}>
+
+      {currentTrackDuration ? (
+        <div className="select-none">
+          {convertDuration(currentTrackTime)} /{" "}
+          {convertDuration(currentTrackDuration)}
+        </div>
+      ) : (
+        <div className="select-none">-</div>
+      )}
+
+      <div className="flex flex-row items-center justify-between">
+        <div className="mt-2 flex flex-row space-x-4 pb-2 text-sm">
+          <button
+            onClick={previousTrack}
+            aria-label="Previous track"
+            className="cursor-point transition-transform duration-150 hover:scale-110"
+          >
             <svg
               className="icon h-4"
               xmlns="http://www.w3.org/2000/svg"
@@ -354,7 +678,11 @@ export const MusicPlayer = (props: { closed: boolean }) => {
               />
             </svg>
           </button>
-          <button className="cursor-point" onClick={togglePlay}>
+          <button
+            onClick={togglePlay}
+            aria-label={isPlaying ? "Pause track" : "Play track"}
+            className="cursor-point transition-transform duration-150 hover:scale-110"
+          >
             {!isPlaying ? (
               <svg
                 className="icon h-4"
@@ -379,7 +707,11 @@ export const MusicPlayer = (props: { closed: boolean }) => {
               </svg>
             )}
           </button>
-          <button className="cursor-point" onClick={nextTrack}>
+          <button
+            onClick={nextTrack}
+            aria-label="Next track"
+            className="cursor-point transition-transform duration-150 hover:scale-110"
+          >
             <svg
               className="icon h-4"
               xmlns="http://www.w3.org/2000/svg"
@@ -397,29 +729,23 @@ export const MusicPlayer = (props: { closed: boolean }) => {
           <input
             id="music-player-volume"
             value={currentVolume}
-            className="mac-input"
+            onChange={changeVolume}
+            aria-label="Volume"
+            className={
+              "mac-input hidden lg:block " +
+              (playlist.appearance?.inputClass || "input-mint")
+            }
             type="range"
             min="0"
             max="1"
             step="0.025"
-            onChange={(e) => {
-              const linearVolume = parseFloat(e.target.value);
-              const logScaledVolume = logVolume(linearVolume);
-              const musicPlayer = document.getElementById(
-                "music-player"
-              ) as HTMLAudioElement | null;
-              if (musicPlayer) {
-                musicPlayer.volume = logScaledVolume;
-              }
-              setCurrentVolume(linearVolume);
-            }}
           />
-          <label className="hidden" htmlFor="volume">
+          <label className="hidden" htmlFor="music-player-volume">
             Volume
           </label>
         </div>
       </div>
-      <div>
+      <div className="select-none">
         Track {trackIndex + 1} of {selectedPlaylistLength}
       </div>
       <audio

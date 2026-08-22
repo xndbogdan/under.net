@@ -329,49 +329,125 @@ body {
   background: transparent;
 }
 
+/* Slider Thumb (Resting) */
 .mac-input::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 1.5rem;
-  width: 0.5rem;
-  background: #ffffff;
-  border: 1px solid;
-  margin-top: -5px;
+  height: 1.45rem;
+  width: 0.55rem;
+  background-color: #fafafa;
+  background-image: linear-gradient(
+    to bottom,
+    transparent 8px,
+    #a1a1aa 8px,
+    #a1a1aa 9px,
+    #ffffff 9px,
+    #ffffff 10px,
+    transparent 10px,
+    transparent 13px,
+    #a1a1aa 13px,
+    #a1a1aa 14px,
+    #ffffff 14px,
+    #ffffff 15px,
+    transparent 15px
+  );
+  border: 1px solid #000000;
+  box-shadow: inset 1px 1px 0px #ffffff, inset -1px -1px 0px #71717a, 1px 1px 2px rgba(0, 0, 0, 0.3);
+  margin-top: -4px;
   border-radius: 0px;
   cursor: pointer;
-}
-
-.mac-input:focus::-webkit-slider-thumb {
-  box-shadow: 0px 0px 7px 3px #0065c4;
+  transition: background-color 75ms ease, box-shadow 75ms ease;
 }
 
 .mac-input::-moz-range-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 1.5rem;
-  width: 0.5rem;
-  background: #ffffff;
-  border: 1px solid;
+  height: 1.45rem;
+  width: 0.55rem;
+  background-color: #fafafa;
+  background-image: linear-gradient(
+    to bottom,
+    transparent 8px,
+    #a1a1aa 8px,
+    #a1a1aa 9px,
+    #ffffff 9px,
+    #ffffff 10px,
+    transparent 10px,
+    transparent 13px,
+    #a1a1aa 13px,
+    #a1a1aa 14px,
+    #ffffff 14px,
+    #ffffff 15px,
+    transparent 15px
+  );
+  border: 1px solid #000000;
+  box-shadow: inset 1px 1px 0px #ffffff, inset -1px -1px 0px #71717a, 1px 1px 2px rgba(0, 0, 0, 0.3);
   border-radius: 0px;
   cursor: pointer;
-  margin-top: 0;
-}
-
-.mac-input:focus::-moz-range-thumb {
-  box-shadow: 0px 0px 7px 3px #0065c4;
+  transition: background-color 75ms ease, box-shadow 75ms ease;
 }
 
 .mac-input::-ms-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 0.75rem;
-  width: 0.5rem;
-  background: #ffffff;
-  border: 1px solid;
+  height: 1.45rem;
+  width: 0.55rem;
+  background-color: #fafafa;
+  border: 1px solid #000000;
+  box-shadow: inset 1px 1px 0px #ffffff, inset -1px -1px 0px #71717a;
   margin-top: 0;
   border-radius: 0px;
   cursor: pointer;
 }
 
-.mac-input:focus::-ms-thumb {
-  box-shadow: 0px 0px 7px 3px #0065c4;
+/* Slider Thumb (Active / Pressed-In State) */
+.mac-input:active::-webkit-slider-thumb,
+.mac-input::-webkit-slider-thumb:active {
+  background-color: #d4d4d8;
+  box-shadow: inset -1px -1px 0px #ffffff, inset 1px 1px 0px #3f3f46, inset 0 0 3px rgba(0, 0, 0, 0.35);
+}
+
+.mac-input:active::-moz-range-thumb,
+.mac-input::-moz-range-thumb:active {
+  background-color: #d4d4d8;
+  box-shadow: inset -1px -1px 0px #ffffff, inset 1px 1px 0px #3f3f46, inset 0 0 3px rgba(0, 0, 0, 0.35);
+}
+
+/* ─── LCD Segment Display Animations & Styles ─────────────────────────── */
+@keyframes lcd-decay {
+  0% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-lcd-decay {
+  animation: lcd-decay 500ms cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+  pointer-events: none;
+}
+
+.lcd-glow {
+  text-shadow: 0 0 2px currentColor, 0 0 5px currentColor;
+}
+
+.font-dseg14 {
+  font-family: var(--font-dseg14), monospace;
+}
+
+/* Input Focus Variants */
+.mac-input.input-mint:focus::-webkit-slider-thumb {
+  box-shadow: 0px 0px 7px 3px rgba(1, 215, 176, 0.4);
+}
+.mac-input.input-mint:focus::-moz-range-thumb {
+  box-shadow: 0px 0px 7px 3px rgba(1, 215, 176, 0.4);
+}
+.mac-input.input-mint:focus::-ms-thumb {
+  box-shadow: 0px 0px 7px 3px rgba(1, 215, 176, 0.4);
+}
+
+.mac-input.input-blue:focus::-webkit-slider-thumb {
+  box-shadow: 0px 0px 7px 3px rgba(0, 101, 196, 0.4);
+}
+.mac-input.input-blue:focus::-moz-range-thumb {
+  box-shadow: 0px 0px 7px 3px rgba(0, 101, 196, 0.4);
+}
+.mac-input.input-blue:focus::-ms-thumb {
+  box-shadow: 0px 0px 7px 3px rgba(0, 101, 196, 0.4);
 }

@@ -15,6 +15,13 @@ type Playlist = {
   id: number;
   name: string;
   tracks: Tracklist;
+  appearance?: {
+    primaryColor: string;
+    textColor: string;
+    barsColors: Array<{ stop: number; color: string }>;
+    inputClass: string;
+    gradientFrom: string;
+  };
 };
 
 type DropdownMenuProps = {

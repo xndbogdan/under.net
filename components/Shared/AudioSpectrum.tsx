@@ -1,6 +1,8 @@
 import type {
-  CSSProperties, HTMLProps} from 'react';
-import { useRef, useEffect, useCallback,
+  CSSProperties, HTMLProps
+} from 'react';
+import {
+  useRef, useEffect, useCallback,
 } from 'react';
 
 type MeterColor = {
@@ -88,8 +90,9 @@ export default function AudioSpectrum({
   const drawSpectrum = useCallback((currentAnalyser: AnalyserNode) => {
     const cWidth = audioCanvas.current!.width;
     const cHeight = audioCanvas.current!.height - capHeight;
-    // store the vertical position of hte caps for the previous frame
+    // store the vertical position of the caps for the previous frame
     const capYPositionArray: number[] = [];
+    const decayBlocksArray: number[] = [];
     const ctx = audioCanvas.current!.getContext('2d')!;
     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
 
@@ -102,53 +105,108 @@ export default function AudioSpectrum({
       // gradient = this.props.meterColor
     }
 
+    const primaryThemeColor =
+      Array.isArray(meterColor) && meterColor.length > 0
+        ? (meterColor[0].color as string)
+        : typeof meterColor === 'string'
+          ? meterColor
+          : '#ea5a0c';
+
+    const numBlocks = 6;
+    const blockGap = 1.5;
+    const blockHeight = Math.max(2, Math.floor((cHeight - (numBlocks - 1) * blockGap) / numBlocks));
+    const totalBarsWidth = meterCount * (meterWidth + gap) - gap;
+    const startX = Math.max(0, Math.floor((cWidth - totalBarsWidth) / 2));
+
     const drawMeter = () => {
       // item value of array: 0 - 255
       const array = new Uint8Array(currentAnalyser.frequencyBinCount);
       currentAnalyser.getByteFrequencyData(array);
       if (playStatus.current === 'PAUSED') {
-        // for (let i = array.length - 1; i >= 0; i--) {
-        //   array[i] = 0;
-        // }
         array.fill(0);
         const allCapsReachBottom = !capYPositionArray.some((cap) => cap > 0);
         if (allCapsReachBottom) {
           ctx.clearRect(0, 0, cWidth, cHeight + capHeight);
-          // since the sound is top and animation finished,
-          // stop the requestAnimation to prevent potential memory leak,THIS IS VERY IMPORTANT!
           cancelAnimationFrame(animationId.current!);
           return;
         }
       }
+
       // sample limited data from the total array
-      const step = Math.round(array.length / meterCount);
+      const step = Math.max(1, Math.floor(array.length / (meterCount * 2)));
       ctx.clearRect(0, 0, cWidth, cHeight + capHeight);
+
       for (let i = 0; i < meterCount; i++) {
-        const value = array[i * step];
-        if (capYPositionArray.length < Math.round(meterCount)) {
+        const value = array[i * step] || 0;
+        const colX = startX + i * (meterWidth + gap);
+
+        // Peak cap tracking
+        if (capYPositionArray.length < meterCount) {
           capYPositionArray.push(value);
+          decayBlocksArray.push(0);
         }
-        ctx.fillStyle = capColor;
-        // draw the cap, with transition effect
         if (value < capYPositionArray[i]) {
-          // let y = cHeight - (--capYPositionArray[i])
-          const preValue = --capYPositionArray[i];
-          const y = ((270 - preValue) * cHeight) / 270;
-          ctx.fillRect(i * (meterWidth + gap), y, meterWidth, capHeight);
+          capYPositionArray[i] = Math.max(0, capYPositionArray[i] - 2.5);
         } else {
-          // let y = cHeight - value
-          const y = ((270 - value) * cHeight) / 270;
-          ctx.fillRect(i * (meterWidth + gap), y, meterWidth, capHeight);
           capYPositionArray[i] = value;
         }
-        ctx.fillStyle = gradient; // set the fillStyle to gradient for a better look
 
-        // let y = cHeight - value + this.props.capHeight
-        const y = ((270 - value) * cHeight) / 270 + capHeight;
-        ctx.fillRect(i * (meterWidth + gap), y, meterWidth, cHeight); // the meter
+        const activeBlocks = Math.round((value / 255) * numBlocks);
+
+        // Liquid crystal decay trail tracking
+        if (activeBlocks >= decayBlocksArray[i]) {
+          decayBlocksArray[i] = activeBlocks;
+        } else {
+          decayBlocksArray[i] = Math.max(activeBlocks, decayBlocksArray[i] - 0.2);
+        }
+        const decayIntBlock = Math.ceil(decayBlocksArray[i]);
+
+        // draw permanent unlit background segment cells (25% opacity in exact theme color)
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 0.25;
+        ctx.fillStyle = primaryThemeColor;
+        for (let b = 0; b < numBlocks; b++) {
+          const blockY = cHeight - (b + 1) * (blockHeight + blockGap);
+          ctx.fillRect(colX, blockY, meterWidth, blockHeight);
+        }
+
+        // draw decaying ghost trail in theme color
+        if (decayIntBlock > activeBlocks) {
+          ctx.globalAlpha = 0.55;
+          ctx.fillStyle = primaryThemeColor;
+          for (let b = activeBlocks; b < decayIntBlock; b++) {
+            const blockY = cHeight - (b + 1) * (blockHeight + blockGap);
+            ctx.fillRect(colX, blockY, meterWidth, blockHeight);
+          }
+        }
+
+        // draw active lit segment blocks with matching phosphor bloom
+        ctx.globalAlpha = 1.0;
+        ctx.shadowColor = primaryThemeColor;
+        ctx.shadowBlur = 2.5;
+        ctx.fillStyle = primaryThemeColor;
+        for (let b = 0; b < activeBlocks; b++) {
+          const blockY = cHeight - (b + 1) * (blockHeight + blockGap);
+          ctx.fillRect(colX, blockY, meterWidth, blockHeight);
+        }
+
+        // draw peak cap block
+        const peakBlock = Math.min(numBlocks - 1, Math.round((capYPositionArray[i] / 255) * numBlocks));
+        if (peakBlock >= activeBlocks && peakBlock > 0) {
+          ctx.globalAlpha = 1.0;
+          ctx.shadowBlur = 2.5;
+          ctx.shadowColor = primaryThemeColor;
+          ctx.fillStyle = (capColor as string) || primaryThemeColor;
+          const peakY = cHeight - (peakBlock + 1) * (blockHeight + blockGap);
+          ctx.fillRect(colX, peakY, meterWidth, blockHeight);
+        }
+        ctx.globalAlpha = 1.0;
       }
       animationId.current = requestAnimationFrame(drawMeter);
     };
+    if (animationId.current) {
+      cancelAnimationFrame(animationId.current);
+    }
     animationId.current = requestAnimationFrame(drawMeter);
   }, [capColor, capHeight, gap, meterColor, meterCount, meterWidth]);
 
@@ -164,9 +222,13 @@ export default function AudioSpectrum({
     }
 
     if (!mediaEleSource.current && audioContext.current && analyser.current) {
-      mediaEleSource.current = audioContext.current.createMediaElementSource(currentAudioEle);
-      mediaEleSource.current.connect(analyser.current);
-      mediaEleSource.current.connect(audioContext.current.destination);
+      try {
+        mediaEleSource.current = audioContext.current.createMediaElementSource(currentAudioEle);
+        mediaEleSource.current.connect(analyser.current);
+        mediaEleSource.current.connect(audioContext.current.destination);
+      } catch (err) {
+        console.warn('Media element already connected or could not connect:', err);
+      }
     }
 
     return analyser;
@@ -174,22 +236,17 @@ export default function AudioSpectrum({
 
   // create or update audioContext
   const prepareAPIs = useCallback(() => {
-    // fix browser vender for AudioContext and requestAnimationFrame
-    // window.AudioContext = window.AudioContext;
-    // window.AudioContext = window.AudioContext || window.webkitAudioContext
-    // || window.mozAudioContext || window.msAudioContext;
-    // window.requestAnimationFrame = window.requestAnimationFrame;
-    // window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame
-    // || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
-    // window.cancelAnimationFrame = window.cancelAnimationFrame;
-    // window.cancelAnimationFrame = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.msCancelAnimationFrame;
     try {
-      audioContext.current = new window.AudioContext(); // 1.set audioContext
+      if (!audioContext.current || audioContext.current.state === 'closed') {
+        audioContext.current = new window.AudioContext();
+      } else if (audioContext.current.state === 'suspended') {
+        audioContext.current.resume();
+      }
     } catch (e) {
-      console.error('!Your browser does not support AudioContext');
-      console.error(e);
+      console.error('!Your browser does not support AudioContext', e);
     }
   }, []);
+
   const initAudioEvents = useCallback(() => {
     if (audioEle.current) {
       audioEle.current.onpause = () => {
@@ -207,6 +264,12 @@ export default function AudioSpectrum({
   useEffect(() => {
     prepareElements();
     initAudioEvents();
+
+    return () => {
+      if (animationId.current) {
+        cancelAnimationFrame(animationId.current);
+      }
+    };
   }, [prepareElements, initAudioEvents]);
 
   return (
